@@ -1,10 +1,8 @@
 <?php
 
 use App\Models\Booking\BookingModel;
-use App\Models\Coworking\CoworkingModel;
-use App\Models\CoworkPlan\CoworkPlanModel;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Helpers\TestHelpers;
 
 uses(RefreshDatabase::class);
 
@@ -13,7 +11,7 @@ beforeEach(function () {
     $this->artisan('db:seed --class=AdminSeeder');
 });
 
-describe('coworking plan model test', function () {
+describe('Booking model test', function () {
     $tableName = 'bookings';
 
     $data =  [
@@ -27,31 +25,11 @@ describe('coworking plan model test', function () {
         $this->assertTrue(class_exists('App\Models\Booking\BookingModel'));
     });
 
-    it('can create a coworking plan', function () use ($tableName, $data) {
+    it('can create a Booking', function () use ($tableName, $data) {
 
-        $coworking = CoworkingModel::create([
-            'name' => 'Tropical Nomad',
-            'address' => 'Jl. Kebon Jeruk, Jakarta',
-            'phone' => '08123456789',
-            'email' => 'nJn8m@example.com',
-            'url' => 'https://tropicalnomad.com',
-        ]);
+        $coworkPlan = TestHelpers::createCoworkPlan();
 
-        $coworkPlan = CoworkPlanModel::create([
-            'name' => 'Tropical Nomad',
-            'code' => '12344545',
-            'price' => '1000000',
-            'benefit' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            'coworking_id' => $coworking->id,
-        ]);
-
-        $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'V0i0y@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-        $user->assignRole('member');
+        $user = TestHelpers::createUser();
 
         $data['user_id'] = $user->id;
         $data['cowork_plan_id'] = $coworkPlan->id;
@@ -63,29 +41,9 @@ describe('coworking plan model test', function () {
 
     it('can update a booking', function () use ($tableName, $data) {
 
-        $coworking = CoworkingModel::create([
-            'name' => 'Tropical Nomad',
-            'address' => 'Jl. Kebon Jeruk, Jakarta',
-            'phone' => '08123456789',
-            'email' => 'nJn8m@example.com',
-            'url' => 'https://tropicalnomad.com',
-        ]);
+        $coworkPlan = TestHelpers::createCoworkPlan();
 
-        $coworkPlan = CoworkPlanModel::create([
-            'name' => 'Tropical Nomad',
-            'code' => '12344545',
-            'price' => '1000000',
-            'benefit' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            'coworking_id' => $coworking->id,
-        ]);
-
-        $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'V0i0y@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-        $user->assignRole('member');
+        $user = TestHelpers::createUser();
 
         $data['user_id'] = $user->id;
         $data['cowork_plan_id'] = $coworkPlan->id;
@@ -108,29 +66,10 @@ describe('coworking plan model test', function () {
     });
 
     it('can deleted a booking', function () use ($tableName, $data) {
-        $coworking = CoworkingModel::create([
-            'name' => 'Tropical Nomad',
-            'address' => 'Jl. Kebon Jeruk, Jakarta',
-            'phone' => '08123456789',
-            'email' => 'nJn8m@example.com',
-            'url' => 'https://tropicalnomad.com',
-        ]);
 
-        $coworkPlan = CoworkPlanModel::create([
-            'name' => 'Tropical Nomad',
-            'code' => '12344545',
-            'price' => '1000000',
-            'benefit' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            'coworking_id' => $coworking->id,
-        ]);
+        $coworkPlan = TestHelpers::createCoworkPlan();
 
-        $user = User::create([
-            'name' => 'John Doe',
-            'email' => 'V0i0y@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-        $user->assignRole('member');
+        $user = TestHelpers::createUser();
 
         $data['user_id'] = $user->id;
         $data['cowork_plan_id'] = $coworkPlan->id;
