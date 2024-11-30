@@ -36,6 +36,38 @@ describe('find ' . $name . ' api test', function () use (
                 'data' => $response->json('data'),
             ]);
     });
+
+    it('should get sepecific coworking with valid id', function () use (
+        $url,
+        $formatSuccess
+    ) {
+        $coworking = TestHelpers::createCoworking();
+
+        $response = $this->get($url.'/'.$coworking->id);
+        $response->assertStatus(200)
+            ->assertJsonStructure(
+                $formatSuccess
+            )->assertJson([
+                'status' => 'success',
+                'message' => 'Success',
+                'data' => $coworking->toArray(),
+            ]);
+    });
+
+    it('should get sepecific coworking with invalid id', function () use (
+        $url,
+        $formatError
+    ) {
+        $response = $this->get($url.'/1000');
+        $response->assertStatus(404)
+            ->assertJsonStructure(
+                $formatError
+            )->assertJson([
+                'status' => 'error',
+                'message' => 'Coworking Not Found',
+                'errors' => null,
+            ]);
+    });
 });
 
 describe('create ' . $name . ' api test', function () use (
