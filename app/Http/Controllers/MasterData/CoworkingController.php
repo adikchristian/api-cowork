@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData;
 use App\Helpers\ResponseModel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\Coworking\Store;
+use App\Http\Requests\MasterData\Coworking\Update;
 use App\Models\Coworking\CoworkingModel;
 use Illuminate\Http\Request;
 
@@ -43,9 +44,19 @@ class CoworkingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Update $request, string $id)
     {
-        //
+        $data = $request->all();
+
+        $results = CoworkingModel::find($id);
+
+        if (!$results) {
+            return ResponseModel::error('Coworking Not Found', 404);
+        }
+
+        $results->update($data);
+
+        return ResponseModel::success($data);
     }
 
     /**
