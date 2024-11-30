@@ -76,4 +76,16 @@ class TestHelpers
     {
         return ['status', 'message', 'errors'];
     }
+
+    public static function getJwtTokenAdmin()
+    {
+        // Buat user menggunakan factory
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+
+        // Atur token JWT dengan library auth JWT
+        $token = auth('api')->login($user);
+
+        return $token;
+    }
 }

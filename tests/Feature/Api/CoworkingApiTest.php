@@ -4,11 +4,19 @@ use App\Models\Coworking\CoworkingModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Helpers\TestHelpers;
 
+use function Pest\Laravel\withHeaders;
+
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed --class=RoleSeeder');
     $this->artisan('db:seed --class=AdminSeeder');
+
+    $token = TestHelpers::getJwtTokenAdmin();
+
+    withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+    ]);
 });
 
 $name = 'Coworking';
