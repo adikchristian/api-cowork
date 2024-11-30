@@ -9,7 +9,8 @@ use App\Models\User;
 
 class TestHelpers
 {
-    public static function createCoworkPlan()
+
+    public static function createCoworking()
     {
         $coworking = CoworkingModel::create([
             'name' => 'Tropical Nomad',
@@ -18,6 +19,11 @@ class TestHelpers
             'email' => 'nJn8m@example.com',
             'url' => 'https://tropicalnomad.com',
         ]);
+        return $coworking;
+    }
+    public static function createCoworkPlan()
+    {
+        $coworking = self::createCoworking();
 
         $coworkPlan = CoworkPlanModel::create([
             'name' => 'Tropical Nomad',
@@ -59,5 +65,15 @@ class TestHelpers
         ]);
 
         return $booking;
+    }
+
+    public static function formatResponseSuccess()
+    {
+        return ['status', 'message', 'data'];
+    }
+
+    public static function formatResponseError()
+    {
+        return ['status', 'message', 'errors'];
     }
 }
