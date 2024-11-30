@@ -70,6 +70,13 @@ class CoworkingController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $results = CoworkingModel::find($id);
+
+        if (!$results) {
+            return ResponseModel::error('Coworking Not Found', 404);
+        }
+
+        $results->delete();
+        return ResponseModel::success(null,'Coworking deleted successfully');
     }
 }
