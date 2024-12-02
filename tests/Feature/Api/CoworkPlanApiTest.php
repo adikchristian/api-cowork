@@ -295,41 +295,41 @@ describe('update ' . $name . ' api test', function () use (
     });
 });
 
-// describe('delete ' . $name . ' api test', function () use (
-//     $url,
-//     $formatError,
-//     $formatSuccess,
-//     $name
-// ) {
-//     it('should delete coworking with valid id', function () use (
-//         $url,
-//         $formatSuccess
-//     ) {
-//         $coworking = TestHelpers::createCoworking();
+describe('delete ' . $name . ' api test', function () use (
+    $url,
+    $formatError,
+    $formatSuccess,
+    $name
+) {
+    it('should delete' . $name . ' with valid id', function () use (
+        $url,
+        $formatSuccess
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
 
-//         $response = $this->delete($url.'/'.$coworking->id);
-//         $response->assertStatus(200)
-//             ->assertJsonStructure(
-//                 $formatSuccess
-//             )->assertJson([
-//                 'status' => 'success',
-//                 'message' => 'Coworking deleted successfully',
-//                 'data' => null,
-//             ]);
-//     });
+        $response = $this->delete($url.'/'.$coworkingPlan->id);
+        $response->assertStatus(200)
+            ->assertJsonStructure(
+                $formatSuccess
+            )->assertJson([
+                'status' => 'success',
+                'message' => 'Coworking Plan deleted successfully',
+                'data' => null,
+            ]);
+    });
 
-//     it('should get sepecific coworking with invalid id', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $response = $this->delete($url.'/1000');
-//         $response->assertStatus(404)
-//             ->assertJsonStructure(
-//                 $formatError
-//             )->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Coworking Not Found',
-//                 'errors' => null,
-//             ]);
-//     });
-// });
+    it('should get sepecific ' . $name . ' with invalid id', function () use (
+        $url,
+        $formatError
+    ) {
+        $response = $this->delete($url.'/1000');
+        $response->assertStatus(404)
+            ->assertJsonStructure(
+                $formatError
+            )->assertJson([
+                'status' => 'error',
+                'message' => 'Coworking Plan Not Found',
+                'errors' => null,
+            ]);
+    });
+});

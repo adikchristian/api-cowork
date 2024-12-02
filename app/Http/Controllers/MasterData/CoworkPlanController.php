@@ -79,6 +79,14 @@ class CoworkPlanController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $results = CoworkPlanModel::find($id);
+
+        if (!$results) {
+            return ResponseModel::error('Coworking Plan Not Found', 404);
+        }
+
+        $results->delete();
+
+        return ResponseModel::success(\null,'Coworking Plan deleted successfully');
     }
 }
