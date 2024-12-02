@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\MasterData\CoworkingController;
 use App\Http\Controllers\MasterData\CoworkPlanController;
 use Illuminate\Http\Request;
@@ -41,5 +42,40 @@ Route::prefix('v1')
                     'cowork-plans/{coworkingId}/coworking',
                     [CoworkPlanController::class, 'showCoworking']
                 );
+            });
+        Route::prefix('booking')
+            ->middleware(['auth:api'])
+            ->group(function () {
+                Route::middleware('role:member')
+                    ->group(function () {
+                        Route::get(
+                            '/',
+                            [
+                                BookingController::class,
+                                'index'
+                            ]
+                        );
+                        Route::get(
+                            '/{code}',
+                            [
+                                BookingController::class,
+                                'show'
+                            ]
+                        );
+                        Route::put(
+                            '/cancle/{code}',
+                            [
+                                BookingController::class,
+                                'cancle'
+                            ]
+                        );
+                        Route::post(
+                            '/',
+                            [
+                                BookingController::class,
+                                'store'
+                            ]
+                        );
+                    });
             });
     });

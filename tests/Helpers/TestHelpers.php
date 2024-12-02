@@ -88,4 +88,16 @@ class TestHelpers
 
         return $token;
     }
+
+    public static function getJwtTokenMember()
+    {
+        // Buat user menggunakan factory
+        $user = User::factory()->create();
+        $user->assignRole('member');
+
+        // Atur token JWT dengan library auth JWT
+        $token = auth('api')->login($user);
+
+        return $token;
+    }
 }
