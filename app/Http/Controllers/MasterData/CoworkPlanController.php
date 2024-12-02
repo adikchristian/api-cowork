@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData;
 use App\Helpers\ResponseModel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\CoworkPlan\Store;
+use App\Http\Requests\MasterData\CoworkPlan\Update;
 use App\Models\CoworkPlan\CoworkPlanModel;
 use Illuminate\Http\Request;
 
@@ -58,9 +59,19 @@ class CoworkPlanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Update $request, string $id)
     {
-        //
+        $data = $request->all();
+
+        $results = CoworkPlanModel::find($id);
+
+        if (!$results) {
+            return ResponseModel::error('Coworking Plan Not Found', 404);
+        }
+
+        $results->update($data);
+
+        return ResponseModel::success($results);
     }
 
     /**

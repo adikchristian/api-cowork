@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Coworking\CoworkingModel;
+use App\Models\CoworkPlan\CoworkPlanModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Helpers\TestHelpers;
 
@@ -31,7 +31,7 @@ describe('find ' . $name . ' api test', function () use (
     $name
 ) {
 
-    it('should return a list of '.$name, function () use (
+    it('should return a list of ' . $name, function () use (
         $url,
         $formatSuccess
     ) {
@@ -46,13 +46,13 @@ describe('find ' . $name . ' api test', function () use (
             ]);
     });
 
-    it('should get sepecific '.$name.' with valid id', function () use (
+    it('should get sepecific ' . $name . ' with valid id', function () use (
         $url,
         $formatSuccess
     ) {
         $coworkingPlan = TestHelpers::createCoworkPlan();
 
-        $response = $this->get($url.'/'.$coworkingPlan->id);
+        $response = $this->get($url . '/' . $coworkingPlan->id);
         $response->assertStatus(200)
             ->assertJsonStructure(
                 $formatSuccess
@@ -63,11 +63,11 @@ describe('find ' . $name . ' api test', function () use (
             ]);
     });
 
-    it('should get sepecific '.$name.' with invalid id', function () use (
+    it('should get sepecific ' . $name . ' with invalid id', function () use (
         $url,
         $formatError
     ) {
-        $response = $this->get($url.'/1000');
+        $response = $this->get($url . '/1000');
         $response->assertStatus(404)
             ->assertJsonStructure(
                 $formatError
@@ -84,7 +84,7 @@ describe('find ' . $name . ' api test', function () use (
     ) {
         $coworkingPlan = TestHelpers::createCoworkPlan();
 
-        $response = $this->get($url.'/'.$coworkingPlan->coworking_id.'/coworking');
+        $response = $this->get($url . '/' . $coworkingPlan->coworking_id . '/coworking');
         $response->assertStatus(200)
             ->assertJsonStructure(
                 $formatSuccess
@@ -159,7 +159,7 @@ describe('create ' . $name . ' api test', function () use (
         $data = [
             'name' => 'Monthly',
             'code' => '1234567890',
-            'coworking_id' => $coworking->id, 
+            'coworking_id' => $coworking->id,
             'price' => '200000',
             'benefit' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
         ];
@@ -177,160 +177,123 @@ describe('create ' . $name . ' api test', function () use (
     });
 });
 
-// describe('update ' . $name . ' api test', function () use (
-//     $url,
-//     $formatError,
-//     $formatSuccess,
-//     $name
-// ) {
-//     it('should check validation required', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $response = $this->put($url . '/1');
+describe('update ' . $name . ' api test', function () use (
+    $url,
+    $formatError,
+    $formatSuccess,
+    $name
+) {
+    it('should check validation required', function () use (
+        $url,
+        $formatError
+    ) {
+        $response = $this->put($url . '/1');
 
-//         $response->assertStatus(400)
-//             ->assertJsonStructure($formatError)
-//             ->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Validation Error',
-//                 'errors' => [
-//                     'name' => ['The name field is required.'],
-//                     'address' => ['The address field is required.'],
-//                     'phone' => ['The phone field is required.'],
-//                     'email' => ['The email field is required.'],
-//                     'url' => ['The url field is required.'],
-//                 ]
-//             ]);
-//     });
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'name' => ['The name field is required.'],
+                    'code' => ['The code field is required.'],
+                    'price' => ['The price field is required.'],
+                    'coworking_id' => ['The coworking_id field is required.'],
+                    'benefit' => ['The benefit field is required.'],
+                ]
+            ]);
+    });
 
-//     it('should check validation unique email', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $coworing = TestHelpers::createCoworking();
+    it('should check validation unique code', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
 
-//         $coworing2 = CoworkingModel::create([
-//             'name' => 'Test Name',
-//             'address' => 'test address',
-//             'phone' => '082145678902',
-//             'email' => 'nJn82m@example.com',
-//             'url' => 'https://testapi.com',
-//         ]);
+        $coworkingNew = CoworkPlanModel::create([
+            'name' => 'Tropical Nomad',
+            'code' => '7987544',
+            'price' => '1000000',
+            'coworking_id' => $coworkingPlan->coworking_id,
+            'benefit' => 'test benefit',
+        ]);
 
-//         $data = [
-//             'name' => 'Tropical Nomad',
-//             'address' => 'Jl. Raya Kuta, Kuta, Badung,',
-//             'phone' => '08123456710',
-//             'email' => $coworing->email,
-//             'url' => 'https://tropicalnomad.com',
-//             'id' => $coworing2->id
-//         ];
+        $data = [
+            'name' => 'Tropical Nomad test',
+            'code' => $coworkingPlan->code,
+            'price' => '3000000',
+            'coworking_id' => $coworkingPlan->coworking_id,
+            'benefit' => $coworkingPlan->benefit,
+            'id' => $coworkingNew->id,
+        ];
 
-//         $response = $this->put($url . '/' . $coworing2->id, $data);
+        $response = $this->put($url.'/'.$coworkingNew->id, $data);
 
-//         $response->assertStatus(400)
-//             ->assertJsonStructure($formatError)
-//             ->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Validation Error',
-//                 'errors' => [
-//                     'email' => ['The email field must be unique.'],
-//                 ]
-//             ]);
-//     });
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'code' => ['The code field must be unique.'],
+                ]
+            ]);
+    });
 
-//     it('should check validation unique phone', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $coworing = TestHelpers::createCoworking();
+    it('should update a ' . $name . ' with valid id', function () use (
+        $url,
+        $formatSuccess
+    ) {
+        $coworkPlan = TestHelpers::createCoworkPlan();
 
-//         $coworing2 = CoworkingModel::create([
-//             'name' => 'Test Name',
-//             'address' => 'test address',
-//             'phone' => '082145678902',
-//             'email' => 'nJn82m@example.com',
-//             'url' => 'https://testapi.com',
-//         ]);
+        $data = [
+            'name' => $coworkPlan->name . ' Test Update',
+            'code' => $coworkPlan->code,
+            'price' => $coworkPlan->price,
+            'coworking_id' => $coworkPlan->coworking_id,
+            'benefit' => $coworkPlan->benefit,
+            'id' => $coworkPlan->id
+        ];
 
+        $response = $this->put($url . '/' . $coworkPlan->id, $data);
 
-//         $data = [
-//             'name' => 'Tropical Nomad',
-//             'address' => 'Jl. Raya Kuta, Kuta, Badung,',
-//             'phone' => $coworing->phone,
-//             'email' => 'nJn82m@example.com',
-//             'url' => 'https://tropicalnomad.com',
-//             'id' => $coworing2->id
-//         ];
+        $response->assertStatus(200)
+            ->assertJsonStructure(
+                $formatSuccess
+            )->assertJson([
+                'status' => 'success',
+                'message' => 'Success',
+                'data' => $data,
+            ]);
+    });
 
-//         $response = $this->put($url . '/' . $coworing2->id, $data);
+    it('should update a ' . $name . ' with invalid id', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkPlan = TestHelpers::createCoworkPlan();
 
-//         $response->assertStatus(400)
-//             ->assertJsonStructure($formatError)
-//             ->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Validation Error',
-//                 'errors' => [
-//                     'phone' => ['The phone field must be unique.'],
-//                 ]
-//             ]);
-//     });
+        $data = [
+            'name' => $coworkPlan->name . ' Test Update',
+            'code' => $coworkPlan->code,
+            'price' => $coworkPlan->price,
+            'coworking_id' => $coworkPlan->coworking_id,
+            'benefit' => $coworkPlan->benefit,
+            'id' => $coworkPlan->id
+        ];
 
-//     it('should update a ' . $name . ' with valid id', function () use (
-//         $url,
-//         $formatSuccess
-//     ) {
-//         $coworing = TestHelpers::createCoworking();
+        $response = $this->put($url . '/1000', $data);
 
-//         $data = [
-//             'name' => $coworing->name . ' Test Update',
-//             'address' => $coworing->address . ' Test Update',
-//             'phone' => $coworing->phone,
-//             'email' => $coworing->email,
-//             'url' => $coworing->url,
-//             'id' => $coworing->id
-//         ];
-
-//         $response = $this->put($url . '/' . $coworing->id, $data);
-
-//         $response->assertStatus(200)
-//             ->assertJsonStructure(
-//                 $formatSuccess
-//             )->assertJson([
-//                 'status' => 'success',
-//                 'message' => 'Success',
-//                 'data' => $data,
-//             ]);
-//     });
-
-//     it('should update a ' . $name . ' with invalid id', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $coworing = TestHelpers::createCoworking();
-
-//         $data = [
-//             'name' => $coworing->name . ' Test Update',
-//             'address' => $coworing->address . ' Test Update',
-//             'phone' => $coworing->phone,
-//             'email' => $coworing->email,
-//             'url' => $coworing->url,
-//             'id' => $coworing->id
-//         ];
-
-//         $response = $this->put($url . '/1000', $data);
-
-//         $response->assertStatus(404)
-//             ->assertJsonStructure(
-//                 $formatError
-//             )->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Coworking Not Found',
-//                 'errors' => null,
-//             ]);
-//     });
-// });
+        $response->assertStatus(404)
+            ->assertJsonStructure(
+                $formatError
+            )->assertJson([
+                'status' => 'error',
+                'message' => 'Coworking Plan Not Found',
+                'errors' => null,
+            ]);
+    });
+});
 
 // describe('delete ' . $name . ' api test', function () use (
 //     $url,
