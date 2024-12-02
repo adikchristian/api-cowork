@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MasterData\CoworkingController;
+use App\Http\Controllers\MasterData\CoworkPlanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,10 @@ Route::prefix('v1')
                 Route::resource(
                     'coworkings',
                     CoworkingController::class
+                );
+                Route::resource(
+                    'cowork-plans',
+                    CoworkPlanController::class
                 );
             });
     });
