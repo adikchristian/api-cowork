@@ -70,20 +70,6 @@ class BookingController extends Controller
                 $th->getMessage()
             );
         }
-        // $user = \auth('api')->user();
-        // $booking = BookingModel::where('user_id', $user->id)
-        // ->where('code', $code)
-        // ->first();
-
-        // if (!$booking) {
-        //     return ResponseModel::error('Booking Not Found', 404);
-        // }
-
-        // $booking->update([
-        //     'status' => 'cancled',
-        // ]);
-
-        // return ResponseModel::success($booking);
     }
 
     public function store(Store $request)
