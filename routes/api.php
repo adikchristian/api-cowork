@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Booking\BookingController;
+use App\Http\Controllers\Booking\BookingDetailController;
 use App\Http\Controllers\MasterData\CoworkingController;
 use App\Http\Controllers\MasterData\CoworkPlanController;
 use Illuminate\Http\Request;
@@ -73,6 +74,21 @@ Route::prefix('v1')
                             '/',
                             [
                                 BookingController::class,
+                                'store'
+                            ]
+                        );
+                    });
+            });
+
+        Route::prefix('booking-detail')
+            ->middleware(['auth:api'])
+            ->group(function () {
+                Route::middleware('role:member')
+                    ->group(function () {
+                        Route::post(
+                            '/',
+                            [
+                                BookingDetailController::class,
                                 'store'
                             ]
                         );
