@@ -77,6 +77,23 @@ describe('find ' . $name . ' api test', function () use (
                 'errors' => null,
             ]);
     });
+
+    it('should get Coworking Plan with Coworking ID', function () use (
+        $url,
+        $formatSuccess
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $response = $this->get($url.'/'.$coworkingPlan->coworking_id.'/coworking');
+        $response->assertStatus(200)
+            ->assertJsonStructure(
+                $formatSuccess
+            )->assertJson([
+                'status' => 'success',
+                'message' => 'Success',
+                'data' => $response->json('data'),
+            ]);
+    });
 });
 
 describe('create ' . $name . ' api test', function () use (

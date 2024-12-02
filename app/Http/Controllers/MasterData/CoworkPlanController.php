@@ -46,6 +46,15 @@ class CoworkPlanController extends Controller
         return ResponseModel::success($results);
     }
 
+    public function showCoworking(string $coworkingID)
+    {
+        $results = CoworkPlanModel::with('coworking')
+        ->where('coworking_id', $coworkingID)
+        ->paginate(20);
+
+        return ResponseModel::success($results);
+    }
+
     /**
      * Update the specified resource in storage.
      */

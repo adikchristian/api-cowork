@@ -36,5 +36,10 @@ Route::prefix('v1')
                     'cowork-plans',
                     CoworkPlanController::class
                 );
+
+                Route::get(
+                    'cowork-plans/{coworkingId}/coworking',
+                    [CoworkPlanController::class, 'showCoworking']
+                );
             });
     });
