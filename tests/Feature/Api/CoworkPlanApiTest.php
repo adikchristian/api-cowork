@@ -46,37 +46,37 @@ describe('find ' . $name . ' api test', function () use (
             ]);
     });
 
-    // it('should get sepecific coworking with valid id', function () use (
-    //     $url,
-    //     $formatSuccess
-    // ) {
-    //     $coworking = TestHelpers::createCoworking();
+    it('should get sepecific '.$name.' with valid id', function () use (
+        $url,
+        $formatSuccess
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
 
-    //     $response = $this->get($url.'/'.$coworking->id);
-    //     $response->assertStatus(200)
-    //         ->assertJsonStructure(
-    //             $formatSuccess
-    //         )->assertJson([
-    //             'status' => 'success',
-    //             'message' => 'Success',
-    //             'data' => $coworking->toArray(),
-    //         ]);
-    // });
+        $response = $this->get($url.'/'.$coworkingPlan->id);
+        $response->assertStatus(200)
+            ->assertJsonStructure(
+                $formatSuccess
+            )->assertJson([
+                'status' => 'success',
+                'message' => 'Success',
+                'data' => $coworkingPlan->toArray(),
+            ]);
+    });
 
-    // it('should get sepecific coworking with invalid id', function () use (
-    //     $url,
-    //     $formatError
-    // ) {
-    //     $response = $this->get($url.'/1000');
-    //     $response->assertStatus(404)
-    //         ->assertJsonStructure(
-    //             $formatError
-    //         )->assertJson([
-    //             'status' => 'error',
-    //             'message' => 'Coworking Not Found',
-    //             'errors' => null,
-    //         ]);
-    // });
+    it('should get sepecific '.$name.' with invalid id', function () use (
+        $url,
+        $formatError
+    ) {
+        $response = $this->get($url.'/1000');
+        $response->assertStatus(404)
+            ->assertJsonStructure(
+                $formatError
+            )->assertJson([
+                'status' => 'error',
+                'message' => 'Coworking Plan Not Found',
+                'errors' => null,
+            ]);
+    });
 });
 
 describe('create ' . $name . ' api test', function () use (

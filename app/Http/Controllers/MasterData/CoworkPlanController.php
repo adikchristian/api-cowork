@@ -37,7 +37,13 @@ class CoworkPlanController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $results = CoworkPlanModel::with('coworking')->find($id);
+
+        if (!$results) {
+            return ResponseModel::error('Coworking Plan Not Found', 404);
+        }
+
+        return ResponseModel::success($results);
     }
 
     /**
