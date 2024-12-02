@@ -62,6 +62,13 @@ Route::prefix('v1')
                                 'show'
                             ]
                         );
+                        Route::put(
+                            '/cancle/{code}',
+                            [
+                                BookingController::class,
+                                'cancle'
+                            ]
+                        );
                         Route::post(
                             '/',
                             [

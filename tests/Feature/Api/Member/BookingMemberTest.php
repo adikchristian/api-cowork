@@ -79,7 +79,7 @@ describe('find ' . $name . ' api test', function () use (
         $tokenMember = TestHelpers::getJwtTokenMember();
         $response = $this->withHeaders(
             ['Authorization' => 'Bearer ' . $tokenMember]
-        )->get($url . '/1000');
+        )->getJson($url . '/1000');
         $response->assertStatus(404)
             ->assertJsonStructure(
                 $formatError
@@ -233,120 +233,79 @@ describe('create ' . $name . ' api test', function () use (
     });
 });
 
-// describe('update ' . $name . ' api test', function () use (
-//     $url,
-//     $formatError,
-//     $formatSuccess,
-//     $name
-// ) {
-//     it('should check validation required', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $response = $this->put($url . '/1');
+describe('update ' . $name . ' api test', function () use (
+    $url,
+    $formatError,
+    $formatSuccess,
+    $name
+) {
+    it('should cancle a ' . $name . ' with valid owner', function () use (
+        $url,
+        $formatSuccess
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+        $tokenMember = TestHelpers::getJwtTokenMember();
+        $userId = auth('api')->user()->id;
+        $booking = BookingModel::create([
+            'user_id' => $userId,
+            'cowork_plan_id' => $coworkingPlan->id,
+            'code' => '12344545',
+            'price' => $coworkingPlan->price,
+            'date' => '2024-11-27',
+            'status' => 'pending',
+        ]);
 
-//         $response->assertStatus(400)
-//             ->assertJsonStructure($formatError)
-//             ->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Validation Error',
-//                 'errors' => [
-//                     'name' => ['The name field is required.'],
-//                     'code' => ['The code field is required.'],
-//                     'price' => ['The price field is required.'],
-//                     'coworking_id' => ['The coworking_id field is required.'],
-//                     'benefit' => ['The benefit field is required.'],
-//                 ]
-//             ]);
-//     });
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->putJson($url . "/cancle/" . $booking->code);
 
-//     it('should check validation unique code', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $coworkingPlan = TestHelpers::createCoworkPlan();
+        $response->assertStatus(200)
+            ->assertJsonStructure($formatSuccess)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Cancel Booking Success',
+                'data' => null,
+            ]);
+    });
 
-//         $coworkingNew = CoworkPlanModel::create([
-//             'name' => 'Tropical Nomad',
-//             'code' => '7987544',
-//             'price' => '1000000',
-//             'coworking_id' => $coworkingPlan->coworking_id,
-//             'benefit' => 'test benefit',
-//         ]);
+    it('should cancle a ' . $name . ' with invalid code or owner', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
 
-//         $data = [
-//             'name' => 'Tropical Nomad test',
-//             'code' => $coworkingPlan->code,
-//             'price' => '3000000',
-//             'coworking_id' => $coworkingPlan->coworking_id,
-//             'benefit' => $coworkingPlan->benefit,
-//             'id' => $coworkingNew->id,
-//         ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->putJson($url . "/cancle/1000");
 
-//         $response = $this->put($url.'/'.$coworkingNew->id, $data);
+        $response->assertStatus(404)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Booking Not Found',
+                'errors' => null,
+            ]);
+    });
 
-//         $response->assertStatus(400)
-//             ->assertJsonStructure($formatError)
-//             ->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Validation Error',
-//                 'errors' => [
-//                     'code' => ['The code field must be unique.'],
-//                 ]
-//             ]);
-//     });
+    it('should cancle a ' . $name . ' with invalid role', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenAdmin();
 
-//     it('should update a ' . $name . ' with valid id', function () use (
-//         $url,
-//         $formatSuccess
-//     ) {
-//         $coworkPlan = TestHelpers::createCoworkPlan();
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->putJson($url . "/cancle/1000");
 
-//         $data = [
-//             'name' => $coworkPlan->name . ' Test Update',
-//             'code' => $coworkPlan->code,
-//             'price' => $coworkPlan->price,
-//             'coworking_id' => $coworkPlan->coworking_id,
-//             'benefit' => $coworkPlan->benefit,
-//             'id' => $coworkPlan->id
-//         ];
-
-//         $response = $this->put($url . '/' . $coworkPlan->id, $data);
-
-//         $response->assertStatus(200)
-//             ->assertJsonStructure(
-//                 $formatSuccess
-//             )->assertJson([
-//                 'status' => 'success',
-//                 'message' => 'Success',
-//                 'data' => $data,
-//             ]);
-//     });
-
-//     it('should update a ' . $name . ' with invalid id', function () use (
-//         $url,
-//         $formatError
-//     ) {
-//         $coworkPlan = TestHelpers::createCoworkPlan();
-
-//         $data = [
-//             'name' => $coworkPlan->name . ' Test Update',
-//             'code' => $coworkPlan->code,
-//             'price' => $coworkPlan->price,
-//             'coworking_id' => $coworkPlan->coworking_id,
-//             'benefit' => $coworkPlan->benefit,
-//             'id' => $coworkPlan->id
-//         ];
-
-//         $response = $this->put($url . '/1000', $data);
-
-//         $response->assertStatus(404)
-//             ->assertJsonStructure(
-//                 $formatError
-//             )->assertJson([
-//                 'status' => 'error',
-//                 'message' => 'Coworking Plan Not Found',
-//                 'errors' => null,
-//             ]);
-//     });
-// });
+        $response->assertStatus(403)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Forbidden',
+                'errors' => null,
+            ]);
+    });
+});

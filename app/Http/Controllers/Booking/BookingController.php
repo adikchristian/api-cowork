@@ -6,8 +6,10 @@ use App\Helpers\ResponseModel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\Store;
 use App\Models\Booking\BookingModel;
+use App\Models\BookingApproval\BookingApprovalModel;
 use App\Models\CoworkPlan\CoworkPlanModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -16,8 +18,8 @@ class BookingController extends Controller
     {
         $user = \auth('api')->user();
         $bookings = BookingModel::where('user_id', $user->id)
-        ->paginate(20);
-        
+            ->paginate(20);
+
         return ResponseModel::success($bookings);
     }
 
@@ -25,14 +27,63 @@ class BookingController extends Controller
     {
         $user = \auth('api')->user();
         $booking = BookingModel::where('user_id', $user->id)
-        ->where('code', $code)
-        ->first();
+            ->where('code', $code)
+            ->first();
 
         if (!$booking) {
             return ResponseModel::error('Booking Not Found', 404);
         }
-        
+
         return ResponseModel::success($booking);
+    }
+
+    public function cancle($code)
+    {
+        $user = \auth('api')->user();
+        $booking = BookingModel::where('user_id', $user->id)
+            ->where('code', $code)
+            ->first();
+
+        if (!$booking) {
+            return ResponseModel::error('Booking Not Found', 404);
+        }
+
+        try {
+            DB::transaction(function () use ($booking, $user) {
+
+                $booking->update([
+                    'status' => 'cancled',
+                ]);
+
+                BookingApprovalModel::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => $user->id,
+                    'status' => 'cancled',
+                    'description' => 'Self Cancel Booking',
+                ]);
+            });
+            return ResponseModel::success(\null, 'Cancel Booking Success');
+        } catch (\Throwable $th) {
+            return ResponseModel::error(
+                'Internal Server Error',
+                500,
+                $th->getMessage()
+            );
+        }
+        // $user = \auth('api')->user();
+        // $booking = BookingModel::where('user_id', $user->id)
+        // ->where('code', $code)
+        // ->first();
+
+        // if (!$booking) {
+        //     return ResponseModel::error('Booking Not Found', 404);
+        // }
+
+        // $booking->update([
+        //     'status' => 'cancled',
+        // ]);
+
+        // return ResponseModel::success($booking);
     }
 
     public function store(Store $request)
@@ -45,7 +96,6 @@ class BookingController extends Controller
 
         $booking = BookingModel::create($data);
         return ResponseModel::success($booking);
-
     }
 
     public function generateCode($userId)
@@ -53,7 +103,7 @@ class BookingController extends Controller
         $bookingByUser = BookingModel::where('user_id', $userId)->count();
         $bookingByUser = $bookingByUser + 1;
 
-        $code = \date('ymd').$userId.$bookingByUser;
+        $code = \date('ymd') . $userId . $bookingByUser;
         return $code;
     }
 }
