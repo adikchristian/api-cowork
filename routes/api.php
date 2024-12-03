@@ -34,11 +34,11 @@ Route::prefix('v1')
                 Route::resource(
                     'coworkings',
                     CoworkingController::class
-                );
+                )->except(['create', 'edit']);
                 Route::resource(
                     'cowork-plans',
                     CoworkPlanController::class
-                );
+                )->except(['create', 'edit']);
 
                 Route::get(
                     'cowork-plans/{coworkingId}/coworking',

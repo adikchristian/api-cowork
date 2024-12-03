@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\ResponseModel;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +31,18 @@ return Application::configure(basePath: dirname(__DIR__))
                 return ResponseModel::error(
                     'Forbidden',
                     403,
+                    null
+                );
+            }
+        );
+        $exceptions->renderable(
+            function (
+                AuthenticationException $exception,
+                Request $request
+            ){
+                return ResponseModel::error(
+                    'Unauthenticated.',
+                    401,
                     null
                 );
             }
