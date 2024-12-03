@@ -150,6 +150,88 @@ describe('create ' . $name . ' api test', function () use (
             ]);
     });
 
+    it('should check validation max', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $data = [
+            'name' => 'Tropical Nomad',
+            'code' => '12345678900',
+            'price' => '999999999999999999999',
+            'coworking_id' => $coworkingPlan->coworking_id,
+            'benefit' => $coworkingPlan->benefit,
+        ];
+
+        $response = $this->post($url, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'code' => ['The code field must not exceed 10 characters.'],
+                    'price' => ['The price field must be 20 digits.'],
+                ]
+            ]);
+    });
+
+    it('should check validation numeric', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $data = [
+            'name' => 'Tropical Nomad',
+            'code' => '1234567',
+            'price' => 'string',
+            'coworking_id' => $coworkingPlan->coworking_id,
+            'benefit' => $coworkingPlan->benefit,
+        ];
+
+        $response = $this->post($url, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'price' => ['The price field must be a number.'],
+                ]
+            ]);
+    });
+
+    it('should check validation exists coworking id', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $data = [
+            'name' => 'Tropical Nomad',
+            'code' => '1234567',
+            'price' => 'string',
+            'coworking_id' => 1000,
+            'benefit' => $coworkingPlan->benefit,
+        ];
+
+        $response = $this->post($url, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'coworking_id' => ['Coworking Not Found.'],
+                ]
+            ]);
+    });
+
     it('should create a ' . $name, function () use (
         $url,
         $formatSuccess
@@ -236,6 +318,88 @@ describe('update ' . $name . ' api test', function () use (
                 'message' => 'Validation Error',
                 'errors' => [
                     'code' => ['The code field must be unique.'],
+                ]
+            ]);
+    });
+
+    it('should check validation max', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $data = [
+            'name' => 'Tropical Nomad',
+            'code' => '12345678900',
+            'price' => '999999999999999999999',
+            'coworking_id' => $coworkingPlan->coworking_id,
+            'benefit' => $coworkingPlan->benefit,
+        ];
+
+        $response = $this->put($url.'/'.$coworkingPlan->id, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'code' => ['The code field must not exceed 10 characters.'],
+                    'price' => ['The price field must be 20 digits.'],
+                ]
+            ]);
+    });
+
+    it('should check validation numeric', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $data = [
+            'name' => 'Tropical Nomad',
+            'code' => '1234567',
+            'price' => 'string',
+            'coworking_id' => $coworkingPlan->coworking_id,
+            'benefit' => $coworkingPlan->benefit,
+        ];
+
+        $response = $this->put($url.'/'.$coworkingPlan->id, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'price' => ['The price field must be a number.'],
+                ]
+            ]);
+    });
+
+    it('should check validation exists coworking id', function () use (
+        $url,
+        $formatError
+    ) {
+        $coworkingPlan = TestHelpers::createCoworkPlan();
+
+        $data = [
+            'name' => 'Tropical Nomad',
+            'code' => '1234567',
+            'price' => 'string',
+            'coworking_id' => 1000,
+            'benefit' => $coworkingPlan->benefit,
+        ];
+
+        $response = $this->put($url.'/'.$coworkingPlan->id, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'coworking_id' => ['Coworking Not Found.'],
                 ]
             ]);
     });

@@ -154,6 +154,150 @@ describe('create ' . $name . ' api test', function () use (
             ]);
     });
 
+    it('should check validation max', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+        $booking = TestHelpers::createBooking();
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, [
+                'cowork_plan_id' => $booking->cowork_plan_id,
+                'code' => '23433445454654545454',
+                'price' => $booking->price,
+                'user_id' => $booking->user_id,
+                'status' => $booking->status,
+            ]);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'code' => ['The code field must not exceed 10 characters.'],
+                ]
+            ]);
+    });
+
+    it('should check validation exist cowork_plan_id', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+        $booking = TestHelpers::createBooking();
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, [
+                'cowork_plan_id' => 1000,
+                'code' => '7788555',
+                'price' => $booking->price,
+                'user_id' => $booking->user_id,
+                'status' => $booking->status,
+                'date' => '2024-12-02',
+            ]);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'cowork_plan_id' => ['Cowork Plan Not Found.'],
+                ]
+            ]);
+    });
+
+    it('should check validation exist user_id', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+        $booking = TestHelpers::createBooking();
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, [
+                'cowork_plan_id' => $booking->cowork_plan_id,
+                'code' => '7788556',
+                'price' => $booking->price,
+                'user_id' => 1000,
+                'status' => $booking->status,
+                'date' => '2024-12-02',
+            ]);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'user_id' => ['User Not Found.'],
+                ]
+            ]);
+    });
+
+    it('should check validation date', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+        $booking = TestHelpers::createBooking();
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, [
+                'cowork_plan_id' => $booking->cowork_plan_id,
+                'code' => '7788557',
+                'price' => $booking->price,
+                'user_id' => $booking->user_id,
+                'status' => $booking->status,
+                'date' => 'test bad date',
+            ]);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'date' => ['The date field must be a valid date.'],
+                ]
+            ]);
+    });
+
+    it('should check validation numeric', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+        $booking = TestHelpers::createBooking();
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, [
+                'cowork_plan_id' => $booking->cowork_plan_id,
+                'code' => '7788558',
+                'price' => 'string',
+                'user_id' => $booking->user_id,
+                'status' => $booking->status,
+                'date' => '2024-12-02',
+            ]);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'price' => ['The price field must be a number.'],
+                ]
+            ]);
+    });
+
     it('should create a ' . $name, function () use (
         $url,
         $formatSuccess

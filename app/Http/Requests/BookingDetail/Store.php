@@ -42,7 +42,7 @@ class Store extends FormRequest
             'date.required' => 'Date is required',
             'date.date' => 'Date must be a valid date',
             'booking_id.required' => 'Booking ID is required',
-            'booking_id.exists' => 'Booking ID does not exist',
+            'booking_id.exists' => 'Booking ID Not Found',
         ];
     }
 

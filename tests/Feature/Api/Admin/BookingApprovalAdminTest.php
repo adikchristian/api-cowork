@@ -43,6 +43,57 @@ describe('create ' . $name . ' api test', function () use (
             ]);
     });
 
+    it('should check validation exists booking id', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenAdmin = TestHelpers::getJwtTokenAdmin();
+        $data = [
+            'booking_id' => 1000,
+            'status' => 'success',
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenAdmin]
+        )
+            ->postJson($url, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'booking_id' => ['Booking ID Not Found']
+                ]
+            ]);
+    });
+
+    it('should check validation :in status', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenAdmin = TestHelpers::getJwtTokenAdmin();
+        $bookingDetail = TestHelpers::createBookingDetail();
+        $data = [
+            'booking_id' => $bookingDetail->booking_id,
+            'status' => 'test',
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenAdmin]
+        )
+            ->postJson($url, $data);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'status' => ['Status must be success, pending, or cancled']
+                ]
+            ]);
+    });
+
     it('should create a ' . $name, function () use (
         $url,
         $formatSuccess

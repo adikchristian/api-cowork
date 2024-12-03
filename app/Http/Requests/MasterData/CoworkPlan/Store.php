@@ -43,7 +43,7 @@ class Store extends FormRequest
             'price.required' => 'The price field is required.',
             'benefit.required' => 'The benefit field is required.',
             'coworking_id.required' => 'The coworking_id field is required.',
-            'coworking_id.exists' => 'Coworking not found.',
+            'coworking_id.exists' => 'Coworking Not Found.',
             'code.max' => 'The code field must not exceed 10 characters.',
             'price.numeric' => 'The price field must be a number.',
             'price.max' => 'The price field must be 20 digits.',
