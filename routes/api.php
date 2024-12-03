@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Booking\Admin\BookingApprovalController;
 use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\Booking\BookingDetailController;
 use App\Http\Controllers\MasterData\CoworkingController;
@@ -89,6 +90,20 @@ Route::prefix('v1')
                             '/',
                             [
                                 BookingDetailController::class,
+                                'store'
+                            ]
+                        );
+                    });
+            });
+        Route::prefix('booking-approval')
+            ->middleware(['auth:api'])
+            ->group(function () {
+                Route::middleware('role:admin')
+                    ->group(function () {
+                        Route::post(
+                            '/',
+                            [
+                                BookingApprovalController::class,
                                 'store'
                             ]
                         );

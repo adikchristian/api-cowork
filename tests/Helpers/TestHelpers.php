@@ -3,6 +3,7 @@
 namespace Tests\Helpers;
 
 use App\Models\Booking\BookingModel;
+use App\Models\BookingDetail\BookingDetailModel;
 use App\Models\Coworking\CoworkingModel;
 use App\Models\CoworkPlan\CoworkPlanModel;
 use App\Models\User;
@@ -65,6 +66,52 @@ class TestHelpers
         ]);
 
         return $booking;
+    }
+
+    public static function createBookingSuccess()
+    {
+        $coworkPlan = self::createCoworkPlan();
+
+        $user = self::createUser();
+
+        $booking = BookingModel::create([
+            'user_id' => $user->id,
+            'cowork_plan_id' => $coworkPlan->id,
+            'code' => '12344545',
+            'price' => '1000000',
+            'date' => '2024-11-27',
+            'status' => 'success',
+        ]);
+
+        return $booking;
+    }
+
+    public static function createBookingDetail()
+    {
+        $booking = self::createBooking();
+
+        $bookingDetail = BookingDetailModel::create([
+            'booking_id' => $booking->id,
+            'date' => '2024-12-03',
+            'file' => 'https://via.placeholder.com/150',
+
+        ]);
+
+        return $bookingDetail;
+    }
+
+    public static function createBookingDetailSuccess()
+    {
+        $booking = self::createBookingSuccess();
+
+        $bookingDetail = BookingDetailModel::create([
+            'booking_id' => $booking->id,
+            'date' => '2024-12-03',
+            'file' => 'https://via.placeholder.com/150',
+
+        ]);
+
+        return $bookingDetail;
     }
 
     public static function formatResponseSuccess()
