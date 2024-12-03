@@ -47,6 +47,159 @@ describe('create ' . $name . ' api test', function () use (
             ]);
     });
 
+    it('should check validation exists booking id', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+
+        $file = UploadedFile::fake()->image('test.jpg');
+
+        $dataDetail = [
+            'booking_id' => 1000,
+            'date' => '2024-12-02',
+            'file' => $file,
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, $dataDetail);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'booking_id' => ['Booking ID Not Found'],
+                ]
+            ]);
+    });
+
+    it('should check validation date', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+
+        $file = UploadedFile::fake()->image('test.jpg');
+
+        $booking = TestHelpers::createBooking();
+
+        $dataDetail = [
+            'booking_id' => $booking->id,
+            'date' => 'string',
+            'file' => $file,
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, $dataDetail);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'date' => ['Date must be a valid date'],
+                ]
+            ]);
+    });
+
+    it('should check validation file', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+
+        $file = UploadedFile::fake()->image('test.jpg');
+
+        $booking = TestHelpers::createBooking();
+
+        $dataDetail = [
+            'booking_id' => $booking->id,
+            'date' => '2024-12-02',
+            'file' => 'string',
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, $dataDetail);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'file' => ['File must be a file'],
+                ]
+            ]);
+    });
+
+    it('should check validation file mimes', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+
+        $file = UploadedFile::fake()->image('test.txt');
+
+        $booking = TestHelpers::createBooking();
+
+        $dataDetail = [
+            'booking_id' => $booking->id,
+            'date' => '2024-12-02',
+            'file' => $file,
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, $dataDetail);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'file' => ['File must be a jpg, png, or pdf'],
+                ]
+            ]);
+    });
+
+    it('should check validation file max', function () use (
+        $url,
+        $formatError
+    ) {
+        $tokenMember = TestHelpers::getJwtTokenMember();
+
+        $file = UploadedFile::fake()->create('test.jpg', 2049,'image/jpeg');
+
+        $booking = TestHelpers::createBooking();
+
+        $dataDetail = [
+            'booking_id' => $booking->id,
+            'date' => '2024-12-02',
+            'file' => $file,
+        ];
+        $response = $this->withHeaders(
+            ['Authorization' => 'Bearer ' . $tokenMember]
+        )
+            ->postJson($url, $dataDetail);
+
+        $response->assertStatus(400)
+            ->assertJsonStructure($formatError)
+            ->assertJson([
+                'status' => 'error',
+                'message' => 'Validation Error',
+                'errors' => [
+                    'file' => ['File size must not exceed 2MB'],
+                ]
+            ]);
+    });
+
     it('should create a ' . $name.' with valid owner and upload', function () use (
         $url,
         $formatSuccess
