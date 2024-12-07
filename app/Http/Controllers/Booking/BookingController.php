@@ -26,7 +26,13 @@ class BookingController extends Controller
     public function show($code)
     {
         $user = \auth('api')->user();
-        $booking = BookingModel::where('user_id', $user->id)
+        $booking = BookingModel::with([
+            'detail',
+            'approval',
+            'plan.coworking',
+            'user'
+        ])
+            ->where('user_id', $user->id)
             ->where('code', $code)
             ->first();
 
@@ -62,7 +68,8 @@ class BookingController extends Controller
                     'description' => 'Self Cancel Booking',
                 ]);
             });
-            return ResponseModel::success(\null, 'Cancel Booking Success');
+            $bookingDetail = BookingModel::with('approval')->find($booking->id);
+            return ResponseModel::success($bookingDetail, 'Cancel Booking Success');
         } catch (\Throwable $th) {
             return ResponseModel::error(
                 'Internal Server Error',

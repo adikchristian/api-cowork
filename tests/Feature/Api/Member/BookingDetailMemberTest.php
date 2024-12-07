@@ -215,7 +215,6 @@ describe('create ' . $name . ' api test', function () use (
             'date' => '2024-12-02',
             'price' => $coworkingPlan->price,
             'code' => '12344545',
-            'status' => 'success',
         ];
 
         $booking = BookingModel::create($data);

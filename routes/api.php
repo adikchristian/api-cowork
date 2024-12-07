@@ -6,7 +6,23 @@ use App\Http\Controllers\Booking\BookingDetailController;
 use App\Http\Controllers\MasterData\CoworkingController;
 use App\Http\Controllers\MasterData\CoworkPlanController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+
+if (app()->environment(['local'])) {
+    Route::post('/run-artisan', function (Request $request) {
+        $command = $request->input('command');
+
+        // Jalankan perintah Artisan
+        try {
+            Artisan::call($command);
+            $output = Artisan::output();
+            return response()->json(['success' => true, 'output' => $output]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    });
+}
 
 Route::prefix('v1')
     ->group(function () {

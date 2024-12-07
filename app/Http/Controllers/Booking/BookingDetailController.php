@@ -14,8 +14,13 @@ class BookingDetailController extends Controller
     public function store(Store $request)
     {
         $data = $request->all();
-        $booking = BookingModel::find($data['booking_id']);
+        $booking = BookingModel::where(['status' => 'pending'])
+            ->find($data['booking_id']);
         $authUser = auth('api')->user();
+
+        if(!$booking){
+            return ResponseModel::error('Booking Not Found', 404);
+        }
 
         if ($authUser->id != $booking->user_id) {
             return ResponseModel::error('You are not allowed to do this action', 403);
