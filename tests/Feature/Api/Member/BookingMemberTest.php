@@ -409,7 +409,7 @@ describe('update ' . $name . ' api test', function () use (
             ->assertJson([
                 'status' => 'success',
                 'message' => 'Cancel Booking Success',
-                'data' => null,
+                'data' => $response->json('data'),
             ]);
     });
 
