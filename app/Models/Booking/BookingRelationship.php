@@ -11,7 +11,7 @@ trait BookingRelationship
 {
     public function plan()
     {
-        return $this->belongsTo(CoworkPlanModel::class);
+        return $this->belongsTo(CoworkPlanModel::class, 'cowork_plan_id', 'id');
     }
 
     public function user()
